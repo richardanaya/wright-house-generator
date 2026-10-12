@@ -18,3 +18,13 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Fail if the committed Pages bundle is stale
+        run: |
+          status="$(git status --porcelain -- index.html app)"
+          if [ -n "$status" ]; then
+            echo "The committed GitHub Pages bundle does not match this build."
+            echo "Run npm run build and commit index.html and app/."
+            echo "$status"
+            git diff -- index.html app || true
+            exit 1
+          fi

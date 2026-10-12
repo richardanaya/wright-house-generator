@@ -17,7 +17,7 @@ Other scripts:
 
 - `npm test` — grammar and determinism tests
 - `npm run typecheck`
-- `npm run build` — static site in `dist/`
+- `npm run build` — typecheck, static site in `dist/`, and refresh the committed Pages files `index.html` and `app/`
 - `npm run preview`
 
 ## Generation rules
@@ -89,9 +89,11 @@ The generator is a shape grammar on a **2 × 4 ft module** (the Usonian grid). W
 
 ## Deploy
 
-`npm run build` emits a static `dist/` with relative asset paths.
+GitHub Pages publishes the `main` branch root (Deploy from a branch, folder `/`). `index.html` in the repository root is the built page. It loads the committed bundle in `app/assets/` with relative `./` paths, so `https://richardanaya.github.io/wright-house-generator/` resolves scripts and styles without a custom base. `.nojekyll` keeps Pages from running Jekyll on that bundle.
 
-GitHub Pages is wired in `.github/workflows/pages.yml` and deploys on pushes to `main`. In the repository settings, set Pages to **GitHub Actions**. `.github/workflows/ci.yml` runs typecheck, tests, and the production build on pull requests.
+`index.dev.html` is the Vite entry (`/src/main.ts`). `npm run dev` serves it at `/`. `npm run build` typechecks, builds with `base: './'`, and rewrites `index.html` plus `app/`. Commit those files with the source change. CI fails when the committed bundle does not match a fresh build.
+
+`.github/workflows/ci.yml` runs typecheck, tests, the production build, and that freshness check.
 
 ## Limits
 
